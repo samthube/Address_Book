@@ -1,3 +1,10 @@
+'''
+@Author: Samadhan Thube
+@Date: 2024-09-20 
+@Last Modified by: Samadhan Thube
+@Last Modified time: 2024-09-20 
+@Title : Address Book Program
+'''
 from regex_validation import *
 import logger_file
 
@@ -5,6 +12,23 @@ logger = logger_file.logger_init('address_book')
 
 class Contact:
     def __init__(self, first_name, last_name, address, city, state, zip_code, phone, email):
+        """
+    Description:
+        Class to represent a contact with attributes like name, address, and other details.
+
+    Parameter:
+        first_name (str): The first name of the contact.
+        last_name (str): The last name of the contact.
+        address (str): The address of the contact.
+        city (str): The city of the contact.
+        state (str): The state of the contact.
+        zip_code (str): The zip code of the contact.
+        phone (str): The phone number of the contact.
+        email (str): The email address of the contact.
+
+    Return:
+        None
+    """
         self.first_name = first_name
         self.last_name = last_name
         self.address = address
@@ -15,6 +39,16 @@ class Contact:
         self.email = email
 
     def __str__(self):
+        """
+        Description:
+            Returns a string representation of the contact.
+
+        Parameter:
+            None
+
+        Return:
+            str: The formatted string representation of the contact.
+        """
         return f"{self.first_name} {self.last_name}, {self.address}, {self.city}, {self.state}, {self.zip_code}, {self.phone}, {self.email}"
 
 class AddressBook:
@@ -22,11 +56,38 @@ class AddressBook:
         self.contacts = []
 
     def add_contact(self, first_name, last_name, address, city, state, zip_code, phone, email):
+        """
+        Description:
+            Adds a new contact to the address book after validating the input fields.
+
+        Parameter:
+            first_name (str): First name of the contact.
+            last_name (str): Last name of the contact.
+            address (str): Address of the contact.
+            city (str): City of the contact.
+            state (str): State of the contact.
+            zip_code (str): Zip code of the contact.
+            phone (str): Phone number of the contact.
+            email (str): Email address of the contact.
+
+        Return:
+            None
+        """
         contact = Contact(first_name, last_name, address, city, state, zip_code, phone, email)
         self.contacts.append(contact)
         logger.info(f"Contact {first_name} {last_name} added successfully.")
 
     def display_contacts(self):
+        """
+        Description:
+            Displays all the contacts in the address book. Logs a warning if there are no contacts.
+
+        Parameter:
+            None
+
+        Return:
+            None
+        """
         if self.contacts:
             for contact in self.contacts:
                 print(contact)
