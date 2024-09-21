@@ -75,6 +75,11 @@ class AddressBook:
         Return:
             None
         """
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                logger.error(f"Duplicate entry: Contact {first_name} {last_name} already exists.")
+                return
+            
         contact = Contact(first_name, last_name, address, city, state, zip_code, phone, email)
         self.contacts.append(contact)
         logger.info(f"Contact {first_name} {last_name} added successfully.")
@@ -185,6 +190,7 @@ def validation():
     """
     Description:
         Collects and validates user input for address, city, state, zip code, phone, and email.
+        Repeats asking for input if invalid data is entered.
 
     Parameter:
         None
@@ -194,30 +200,40 @@ def validation():
     """
     address = input("Enter address: ")
 
-    city = input("Enter city: ")
-    if not validate_name(city):
-        logger.error("Invalid city name. Please try again.")
-        return
+    while True:
+        city = input("Enter city: ")
+        if validate_name(city):
+            break
+        else:
+            logger.error("Invalid city name. Please try again.")
 
-    state = input("Enter state: ")
-    if not validate_name(state):
-        logger.error("Invalid state name. Please try again.")
-        return
+    while True:
+        state = input("Enter state: ")
+        if validate_name(state):
+            break
+        else:
+            logger.error("Invalid state name. Please try again.")
 
-    zip_code = input("Enter zip code: ")
-    if not validate_zip(zip_code):
-        logger.error("Invalid zip code. Please try again.")
-        return
+    while True:
+        zip_code = input("Enter zip code: ")
+        if validate_zip(zip_code):
+            break
+        else:
+            logger.error("Invalid zip code. Please try again.")
 
-    phone = input("Enter phone number (xx xxxxxxxxxx): ")
-    if not validate_phone(phone):
-        logger.error("Invalid phone number. Please try again.")
-        return
+    while True:
+        phone = input("Enter phone number (xx xxxxxxxxxx): ")
+        if validate_phone(phone):
+            break
+        else:
+            logger.error("Invalid phone number. Please try again.")
 
-    email = input("Enter email: ")
-    if not validate_email(email):
-        logger.error("Invalid email. Please try again.")
-        return
+    while True:
+        email = input("Enter email: ")
+        if validate_email(email):
+            break
+        else:
+            logger.error("Invalid email. Please try again.")
 
     return address, city, state, zip_code, phone, email
 
