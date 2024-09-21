@@ -185,6 +185,30 @@ class AddressBookSystem:
         """
         return self.address_books.get(book_name, None)
 
+    def search_person(self, location, search_type):
+            """
+            Description:
+                Searches for people in a specific city or state across multiple address books.
+
+            Parameter:
+                location (str): The city or state to search for.
+                search_type (str): 'city' or 'state', indicating which field to search (default: 'city').
+
+            Return:
+                None
+            """
+            found = False
+            for book_name, address_book in self.address_books.items():
+                logger.info(f"Searching in address book: {book_name}")
+                for contact in address_book.contacts:
+                    if (search_type == 'city' and contact.city.lower() == location.lower()) or \
+                    (search_type == 'state' and contact.state.lower() == location.lower()):
+                        print(f"\nContact found in Address Book '{book_name}':")
+                        print(contact)
+                        found = True
+
+            if not found:
+                logger.warning(f"No contacts found in {search_type.capitalize()}: {location}")
 
 def validation():
     """
@@ -263,7 +287,8 @@ def main():
     while True:
         print("\n1. Create new address book")
         print("2. Select and manage an address book")
-        print("3. Exit")
+        print("3. Search for a person by city or state")
+        print("4. Exit")
 
         try:
             choice = int(input("Enter your choice: "))
@@ -321,8 +346,17 @@ def main():
                         logger.warning("Invalid option. Please select a valid choice.")
             else:
                 logger.error(f"Address book '{book_name}' not found.")
-
+                
         elif choice == 3:
+            search_type = input("Search by 'city' or 'state': ").lower()
+            if search_type not in ['city', 'state']:
+                logger.warning("Invalid search type. Please enter 'city' or 'state'.")
+                continue
+
+            location = input(f"Enter the {search_type} name to search for: ")
+            address_book_system.search_person(location, search_type)
+            
+        elif choice == 4:
             logger.info("Exiting the program.")
             break
         else:
