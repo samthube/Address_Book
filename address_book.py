@@ -2,7 +2,7 @@
 @Author: Samadhan Thube
 @Date: 2024-09-20 
 @Last Modified by: Samadhan Thube
-@Last Modified time: 2024-09-21 
+@Last Modified time: 2024-09-20 
 @Title : Address Book Program
 '''
 
@@ -50,7 +50,7 @@ class Contact:
         Return:
             str: The formatted string representation of the contact.
         """
-        return f"{self.first_name} {self.last_name}, {self.address}, {self.city}, {self.state}, {self.zip_code}, {self.phone}, {self.email}"
+        return f"\nName: {self.first_name} {self.last_name},\nAddress: {self.address},\nCity: {self.city},\nState: {self.state},\nzip Code: {self.zip_code},\nPhone: {self.phone},\nEmail: {self.email}\n{"*"*50}"
 
 
 class AddressBook:
@@ -125,6 +125,27 @@ class AddressBook:
         else:
             logger.error(f"No contact found with name {first_name} {last_name}.")
 
+    def delete_contact(self, first_name, last_name):
+        """
+        Description:
+            Deletes a contact based on the provided first and last name.
+
+        Parameter:
+            first_name (str): First name of the contact to delete.
+            last_name (str): Last name of the contact to delete.
+
+        Return:
+            None
+        """
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                self.contacts.remove(contact)
+                logger.info(f"Contact {first_name} {last_name} deleted successfully.")
+                break
+        else:
+            logger.error(f"No contact found with name {first_name} {last_name}.")
+
+
 def validation():
     """
     Description:
@@ -186,24 +207,15 @@ def input_name(field_name):
 
 
 def main():
-    """
-    Description:
-        Main function to run the Address Book application. It allows the user to add, edit, display contacts,
-        or exit the application.
-
-    Parameter:
-        None
-
-    Return:
-        None
-    """
+    
     address_book = AddressBook()
 
     while True:
         print("\n1. Add contact details")
         print("2. Show contact details")
         print("3. Edit contact details")
-        print("4. Exit")
+        print("4. Delete contact details")
+        print("5. Exit")
 
         try:
             choice = int(input("Enter your choice: "))
@@ -229,11 +241,16 @@ def main():
             address_book.edit_contact(first_name, last_name)
 
         elif choice == 4:
+            first_name = input_name("first")
+            last_name = input_name("last")
+            address_book.delete_contact(first_name, last_name)
+
+        elif choice == 5:
             logger.info("Exiting the address book application.")
             break
 
         else:
-            logger.warning("Invalid choice. Please select from 1, 2, 3, or 4.")
+            logger.warning("Invalid choice. Please select from 1, 2, 3, 4, or 5.")
 
 
 if __name__ == "__main__":
