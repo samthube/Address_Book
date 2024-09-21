@@ -1,9 +1,9 @@
 '''
 @Author: Samadhan Thube
-@Date: 2024-09-20 
+@Date: 2024-09-21 
 @Last Modified by: Samadhan Thube
-@Last Modified time: 2024-09-20 
-@Title : Address Book Program
+@Last Modified time: 2024-09-21 
+@Title : Address Book Program 
 '''
 
 from regex_validation import *
@@ -50,7 +50,7 @@ class Contact:
         Return:
             str: The formatted string representation of the contact.
         """
-        return f"\nName: {self.first_name} {self.last_name},\nAddress: {self.address},\nCity: {self.city},\nState: {self.state},\nzip Code: {self.zip_code},\nPhone: {self.phone},\nEmail: {self.email}\n{"*"*50}"
+        return f"\nName: {self.first_name} {self.last_name},\nAddress: {self.address},\nCity: {self.city},\nState: {self.state},\nzip Code: {self.zip_code},\nPhone: {self.phone},\nEmail: {self.email}\n{'*'*50}"
 
 
 class AddressBook:
@@ -146,6 +146,41 @@ class AddressBook:
             logger.error(f"No contact found with name {first_name} {last_name}.")
 
 
+class AddressBookSystem:
+    def __init__(self):
+        self.address_books = {}
+
+    def add_address_book(self, book_name):
+        """
+        Description:
+            Adds a new address book to the system.
+
+        Parameter:
+            book_name (str): The unique name of the address book.
+
+        Return:
+            None
+        """
+        if book_name in self.address_books:
+            logger.warning(f"Address book '{book_name}' already exists.")
+        else:
+            self.address_books[book_name] = AddressBook()
+            logger.info(f"Address book '{book_name}' created successfully.")
+
+    def select_address_book(self, book_name):
+        """
+        Description:
+            Selects an existing address book by name.
+
+        Parameter:
+            book_name (str): The name of the address book to select.
+
+        Return:
+            AddressBook: The selected address book.
+        """
+        return self.address_books.get(book_name, None)
+
+
 def validation():
     """
     Description:
@@ -207,15 +242,12 @@ def input_name(field_name):
 
 
 def main():
-    
-    address_book = AddressBook()
+    address_book_system = AddressBookSystem()
 
     while True:
-        print("\n1. Add contact details")
-        print("2. Show contact details")
-        print("3. Edit contact details")
-        print("4. Delete contact details")
-        print("5. Exit")
+        print("\n1. Create new address book")
+        print("2. Select and manage an address book")
+        print("3. Exit")
 
         try:
             choice = int(input("Enter your choice: "))
@@ -224,33 +256,61 @@ def main():
             continue
 
         if choice == 1:
-            first_name = input_name("first")
-            last_name = input_name("last")
-
-            details = validation()
-            if details:
-                address, city, state, zip_code, phone, email = details
-                address_book.add_contact(first_name, last_name, address, city, state, zip_code, phone, email)
+            book_name = input("Enter address book name: ")
+            address_book_system.add_address_book(book_name)
 
         elif choice == 2:
-            address_book.display_contacts()
+            book_name = input("Enter the name of the address book you want to manage: ")
+            selected_book = address_book_system.select_address_book(book_name)
+
+            if selected_book:
+                while True:
+                    print(f"\nManaging Address Book: {book_name}")
+                    print("1. Add contact")
+                    print("2. Show contacts")
+                    print("3. Edit contact")
+                    print("4. Delete contact")
+                    print("5. Back to main menu")
+
+                    try:
+                        action_choice = int(input("Enter your choice: "))
+                    except ValueError:
+                        logger.warning("Invalid input. Please enter a number from the menu.")
+                        continue
+
+                    if action_choice == 1:
+                        first_name = input_name("first")
+                        last_name = input_name("last")
+                        details = validation()
+                        if details:
+                            address, city, state, zip_code, phone, email = details
+                            selected_book.add_contact(first_name, last_name, address, city, state, zip_code, phone, email)
+
+                    elif action_choice == 2:
+                        selected_book.display_contacts()
+
+                    elif action_choice == 3:
+                        first_name = input_name("first")
+                        last_name = input_name("last")
+                        selected_book.edit_contact(first_name, last_name)
+
+                    elif action_choice == 4:
+                        first_name = input_name("first")
+                        last_name = input_name("last")
+                        selected_book.delete_contact(first_name, last_name)
+
+                    elif action_choice == 5:
+                        break
+                    else:
+                        logger.warning("Invalid option. Please select a valid choice.")
+            else:
+                logger.error(f"Address book '{book_name}' not found.")
 
         elif choice == 3:
-            first_name = input_name("first")
-            last_name = input_name("last")
-            address_book.edit_contact(first_name, last_name)
-
-        elif choice == 4:
-            first_name = input_name("first")
-            last_name = input_name("last")
-            address_book.delete_contact(first_name, last_name)
-
-        elif choice == 5:
-            logger.info("Exiting the address book application.")
+            logger.info("Exiting the program.")
             break
-
         else:
-            logger.warning("Invalid choice. Please select from 1, 2, 3, 4, or 5.")
+            logger.warning("Invalid choice. Please select from the menu options.")
 
 
 if __name__ == "__main__":
