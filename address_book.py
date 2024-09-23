@@ -185,30 +185,37 @@ class AddressBookSystem:
         """
         return self.address_books.get(book_name, None)
 
-    def search_person(self, location, search_type):
-            """
-            Description:
-                Searches for people in a specific city or state across multiple address books.
+    def search_person(self, location, search_type, display_details=True):
+        """
+        Description:
+            Searches for people in a specific city or state across multiple address books.
+        
+        Parameter:
+            location (str): The city or state to search for.
+            search_type (str): 'city' or 'state', indicating which field to search.
+            display_details (bool): If True, displays contact details; if False, only counts the contacts.
 
-            Parameter:
-                location (str): The city or state to search for.
-                search_type (str): 'city' or 'state', indicating which field to search (default: 'city').
-
-            Return:
-                None
-            """
-            found = False
-            for book_name, address_book in self.address_books.items():
-                logger.info(f"Searching in address book: {book_name}")
-                for contact in address_book.contacts:
-                    if (search_type == 'city' and contact.city.lower() == location.lower()) or \
-                    (search_type == 'state' and contact.state.lower() == location.lower()):
+        Return:
+            count (int): The total number of contacts found.
+        """
+        found = False
+        count = 0
+        for book_name, address_book in self.address_books.items():
+            logger.info(f"Searching in address book: {book_name}")
+            for contact in address_book.contacts:
+                if (search_type == 'city' and contact.city.lower() == location.lower()) or \
+                (search_type == 'state' and contact.state.lower() == location.lower()):
+                    if display_details:
                         print(f"\nContact found in Address Book '{book_name}':")
                         print(contact)
-                        found = True
+                    found = True
+                    count += 1
 
-            if not found:
-                logger.warning(f"No contacts found in {search_type.capitalize()}: {location}")
+        if not found and display_details:
+            logger.warning(f"No contacts found in {search_type.capitalize()}: {location}")
+        return count
+ 
+
 
 def validation():
     """
@@ -288,7 +295,8 @@ def main():
         print("\n1. Create new address book")
         print("2. Select and manage an address book")
         print("3. Search for a person by city or state")
-        print("4. Exit")
+        print("4. Get count of contacts by city or state")
+        print("5. Exit")
 
         try:
             choice = int(input("Enter your choice: "))
@@ -357,6 +365,16 @@ def main():
             address_book_system.search_person(location, search_type)
             
         elif choice == 4:
+            search_type = input("Get count by 'city' or 'state': ").lower()
+            if search_type not in ['city', 'state']:
+                logger.warning("Invalid search type. Please enter 'city' or 'state'.")
+                continue
+
+            location = input(f"Enter the {search_type} name to get count: ")
+            count = address_book_system.search_person(location, search_type, display_details=False)
+            print(f"\nTotal number of contacts in {search_type.capitalize()} '{location}': {count}")
+
+        elif choice == 5:
             logger.info("Exiting the program.")
             break
         else:
