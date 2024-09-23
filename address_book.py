@@ -319,7 +319,8 @@ def main():
                     print("2. Show contacts")
                     print("3. Edit contact")
                     print("4. Delete contact")
-                    print("5. Back to main menu")
+                    print("5. Sort contacts by first name")
+                    print("6. Back to main menu")
 
                     try:
                         action_choice = int(input("Enter your choice: "))
@@ -347,8 +348,13 @@ def main():
                         first_name = input_name("first")
                         last_name = input_name("last")
                         selected_book.delete_contact(first_name, last_name)
-
+                    
                     elif action_choice == 5:
+                        selected_book.contacts.sort(key=lambda contact: contact.first_name.lower())
+                        logger.info(f"Contacts in '{book_name}' sorted by first name.")
+                        print("Contacts sorted by first name.")
+                        
+                    elif action_choice == 6:
                         break
                     else:
                         logger.warning("Invalid option. Please select a valid choice.")
