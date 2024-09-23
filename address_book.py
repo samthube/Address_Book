@@ -1,8 +1,8 @@
 '''
 @Author: Samadhan Thube
-@Date: 2024-09-21 
+@Date: 2024-09-23
 @Last Modified by: Samadhan Thube
-@Last Modified time: 2024-09-21 
+@Last Modified time: 2024-09-23
 @Title : Address Book Program 
 '''
 
@@ -149,6 +149,78 @@ class AddressBook:
                 break
         else:
             logger.error(f"No contact found with name {first_name} {last_name}.")
+            
+    def sort_by_name(self):
+        """
+        Description:
+            Sorts the contacts in the address book by their first name in alphabetical order.
+
+        Parameter:
+            None
+
+        Return:
+            None
+        """
+        if not self.contacts:
+            logger.warning("No contacts available to sort.")
+        else:
+            self.contacts.sort(key=lambda contact: contact.first_name.lower())
+            logger.info("Contacts sorted by first name.")
+            self.display_contacts()
+
+    def sort_by_city(self):
+        """
+        Description:
+            Sorts the contacts in the address book by the city name in alphabetical order.
+
+        Parameter:
+            None
+
+        Return:
+            None
+        """
+        if not self.contacts:
+            logger.warning("No contacts available to sort.")
+        else:
+            self.contacts.sort(key=lambda contact: contact.city.lower())
+            logger.info("Contacts sorted by city.")
+            self.display_contacts()
+
+    def sort_by_state(self):
+        """
+        Description:
+            Sorts the contacts in the address book by the state name in alphabetical order.
+
+        Parameter:
+            None
+
+        Return:
+            None
+        """
+        if not self.contacts:
+            logger.warning("No contacts available to sort.")
+        else:
+            self.contacts.sort(key=lambda contact: contact.state.lower())
+            logger.info("Contacts sorted by state.")
+            self.display_contacts()
+
+    def sort_by_zip(self):
+        """
+        Description:
+            Sorts the contacts in the address book by their zip code in ascending numerical order.
+
+        Parameter:
+            None
+
+        Return:
+            None
+        """
+        if not self.contacts:
+            logger.warning("No contacts available to sort.")
+        else:
+            self.contacts.sort(key=lambda contact: contact.zip_code)
+            logger.info("Contacts sorted by zip code.")
+            self.display_contacts()
 
 
 class AddressBookSystem:
@@ -214,8 +286,6 @@ class AddressBookSystem:
         if not found and display_details:
             logger.warning(f"No contacts found in {search_type.capitalize()}: {location}")
         return count
- 
-
 
 def validation():
     """
@@ -319,7 +389,7 @@ def main():
                     print("2. Show contacts")
                     print("3. Edit contact")
                     print("4. Delete contact")
-                    print("5. Sort contacts by first name")
+                    print("5. Sort by")
                     print("6. Back to main menu")
 
                     try:
@@ -350,10 +420,41 @@ def main():
                         selected_book.delete_contact(first_name, last_name)
                     
                     elif action_choice == 5:
-                        selected_book.contacts.sort(key=lambda contact: contact.first_name.lower())
-                        logger.info(f"Contacts in '{book_name}' sorted by first name.")
-                        print("Contacts sorted by first name.")
-                        
+                        while True:
+                            print(f"\nManaging Address Book: {book_name}")
+                            print("1. Name")
+                            print("2. City")
+                            print("3. State")
+                            print("4. Zip")
+                            print("5. Back to main menu")
+
+                            try:
+                                sort_choice = int(input("Enter your choice: "))
+                            except ValueError:
+                                logger.warning("Invalid input. Please enter a number from the menu.")
+                                continue
+                            
+                            if sort_choice == 1:
+                                selected_book.sort_by_name()
+                                print("Contacts sorted by city.")
+
+                            elif sort_choice == 2:
+                                selected_book.sort_by_city()
+                                print("Contacts sorted by city.")
+
+                            elif sort_choice == 3:
+                                selected_book.sort_by_state()
+                                print("Contacts sorted by state.")
+
+                            elif sort_choice == 4:
+                                selected_book.sort_by_zip()
+                                print("Contacts sorted by zip code.")
+
+                            elif sort_choice == 5:
+                                break
+                            else:
+                                logger.warning("Invalid option. Please select a valid choice.")
+                                
                     elif action_choice == 6:
                         break
                     else:
