@@ -8,6 +8,7 @@
 
 from regex_validation import *
 import logger_file
+import os
 
 logger = logger_file.logger_init('address_book')
 
@@ -221,6 +222,53 @@ class AddressBook:
             self.contacts.sort(key=lambda contact: contact.zip_code)
             logger.info("Contacts sorted by zip code.")
             self.display_contacts()
+            
+    def save_contact_to_file(self, first_name, last_name, filename):
+        """
+        Description:
+            Saves a specific contact to a text file.
+
+        Parameter:
+            first_name (str): First name of the contact to save.
+            last_name (str): Last name of the contact to save.
+            filename (str): The name of the file to save the contact.
+
+        Return:
+            None
+        """
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                with open(filename, 'w') as file:
+                    file.write(str(contact))
+                logger.info(f"Contact {first_name} {last_name} saved to {filename}.")
+                return
+        logger.error(f"No contact found with name {first_name} {last_name}.")
+
+    
+    def load_contacts_from_file(self, filename):
+        """
+        Description:
+            Loads contacts from a text file into the address book.
+
+        Parameter:
+            filename (str): The name of the file to load contacts from.
+
+        Return:
+            None
+        """
+        try:
+            with open(filename, 'r') as file:
+                lines = file.readlines()
+                for line in lines:
+                    data = line.strip().split(',')
+                    if len(data) == 8:  
+                        first_name, last_name, address, city, state, zip_code, phone, email = data
+                        self.add_contact(first_name, last_name, address, city, state, zip_code, phone, email)
+                logger.info(f"Contacts loaded from {filename}.")
+        except FileNotFoundError:
+            logger.error(f"The file {filename} was not found.")
+        except Exception as e:
+            logger.error(f"An error occurred while loading contacts: {e}")
 
 
 class AddressBookSystem:
@@ -389,8 +437,10 @@ def main():
                     print("2. Show contacts")
                     print("3. Edit contact")
                     print("4. Delete contact")
-                    print("5. Sort by")
-                    print("6. Back to main menu")
+                    print("5. Save contact to file")
+                    print("6. Load contact from file")
+                    print("7. Sort by")
+                    print("8. Back to main menu")
 
                     try:
                         action_choice = int(input("Enter your choice: "))
@@ -418,8 +468,18 @@ def main():
                         first_name = input_name("first")
                         last_name = input_name("last")
                         selected_book.delete_contact(first_name, last_name)
-                    
-                    elif action_choice == 5:
+                        
+                    elif action_choice == 5: 
+                        first_name = input_name("first")
+                        last_name = input_name("last")
+                        filename = input("Enter the filename to save the contact: ")
+                        selected_book.save_contact_to_file(first_name, last_name, filename)
+
+                    elif action_choice == 6:
+                        filename = input("Enter the filename to load contacts from: ")
+                        selected_book.load_contacts_from_file(filename)
+                                  
+                    elif action_choice == 7:
                         while True:
                             print(f"\nManaging Address Book: {book_name}")
                             print("1. Name")
@@ -455,7 +515,7 @@ def main():
                             else:
                                 logger.warning("Invalid option. Please select a valid choice.")
                                 
-                    elif action_choice == 6:
+                    elif action_choice == 8:
                         break
                     else:
                         logger.warning("Invalid option. Please select a valid choice.")
