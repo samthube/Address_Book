@@ -1,8 +1,8 @@
 '''
 @Author: Samadhan Thube
-@Date: 2024-09-23
+@Date: 2024-09-24
 @Last Modified by: Samadhan Thube
-@Last Modified time: 2024-09-23
+@Last Modified time: 2024-09-24
 @Title : Address Book Program 
 '''
 
@@ -10,6 +10,7 @@ from regex_validation import *
 import logger_file
 import os
 import csv
+import json
 
 logger = logger_file.logger_init('address_book')
 
@@ -325,6 +326,69 @@ class AddressBook:
             logger.error(f"The file {filename} was not found.")
         except Exception as e:
             logger.error(f"An error occurred while loading contacts from CSV: {e}")
+      
+    def write_contacts_to_json(self, filename):
+        """
+        Description:
+            Writes all contacts from the address book to a JSON file.
+
+        Parameter:
+            filename (str): Name of the JSON file to save contacts.
+
+        Return:
+            None
+        """
+        contacts_list = []
+        for contact in self.contacts:
+            contacts_list.append({
+                "First Name": contact.first_name,
+                "Last Name": contact.last_name,
+                "Address": contact.address,
+                "City": contact.city,
+                "State": contact.state,
+                "Zip": contact.zip_code,
+                "Phone": contact.phone,
+                "Email": contact.email
+            })
+
+        with open(filename, mode='w') as file:
+            json.dump(contacts_list, file, indent=4)
+        logger.info(f"Contacts saved to {filename} in JSON format.")
+        
+    def load_contacts_from_json(self, filename):
+        """
+        Description:
+            Loads contacts from a JSON file into the address book.
+
+        Parameter:
+            filename (str): Name of the JSON file to load contacts from.
+
+        Return:
+            None
+        """
+        try:
+            with open(filename, mode='r') as file:
+                contacts_list = json.load(file)
+                for item in contacts_list:
+                    self.add_contact(
+                        item["First Name"],
+                        item["Last Name"],
+                        item["Address"],
+                        item["City"],
+                        item["State"],
+                        item["Zip"],
+                        item["Phone"],
+                        item["Email"]
+                    )
+            logger.info(f"Contacts loaded from {filename}.")
+        except FileNotFoundError:
+            logger.error(f"The file {filename} was not found.")
+        except json.JSONDecodeError:
+            logger.error(f"Error decoding JSON from the file {filename}.")
+        except Exception as e:
+            logger.error(f"An error occurred while loading contacts from JSON: {e}")
+
+
 
 class AddressBookSystem:
     def __init__(self):
@@ -527,8 +591,9 @@ def main():
                     elif action_choice == 5: 
                         while True:
                             print("\n1. Save to text file")
-                            print("2. Save to csv file")
-                            print("3. Go Back")
+                            print("2. Save to CSV file")
+                            print("3. Save to JSON file")
+                            print("4. Go Back")
                             
                             try:
                                 save_choice = int(input("Enter your choice: "))
@@ -547,8 +612,12 @@ def main():
                                 last_name = input_name("last")
                                 filename = input("Enter the CSV filename to save the contact: ")
                                 selected_book.write_contact_to_csv(first_name, last_name, filename)
-                            
+
                             elif save_choice == 3:
+                                filename = input("Enter the JSON filename to save contacts: ")
+                                selected_book.write_contacts_to_json(filename)
+                            
+                            elif save_choice == 4:
                                 break
                             else:
                                 logger.warning("Invalid option. Please select a valid choice.")
@@ -556,8 +625,9 @@ def main():
                     elif action_choice == 6:
                         while True:
                             print("\n1. Load from text file")
-                            print("2. Load from csv file")
-                            print("3. Go Back")
+                            print("2. Load from CSV file")
+                            print("3. Load from JSON file")
+                            print("4. Go Back")
                             
                             try:
                                 load_choice = int(input("Enter your choice: "))
@@ -569,14 +639,19 @@ def main():
                                 filename = input("Enter the filename to load contacts from: ")
                                 selected_book.load_contacts_from_file(filename)
                                 
-                            elif save_choice == 2:
+                            elif load_choice == 2:
                                 filename = input("Enter the CSV filename to load contacts from: ")
                                 selected_book.load_contacts_from_csv(filename)
+
+                            elif load_choice == 3:
+                                filename = input("Enter the JSON filename to load contacts from: ")
+                                selected_book.load_contacts_from_json(filename)
                             
-                            elif save_choice == 3:
+                            elif load_choice == 4:
                                 break
                             else:
                                 logger.warning("Invalid option. Please select a valid choice.")
+
                                   
                     elif action_choice == 7:
                         while True:
