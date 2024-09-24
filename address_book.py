@@ -9,6 +9,7 @@
 from regex_validation import *
 import logger_file
 import os
+import csv
 
 logger = logger_file.logger_init('address_book')
 
@@ -270,6 +271,60 @@ class AddressBook:
         except Exception as e:
             logger.error(f"An error occurred while loading contacts: {e}")
 
+    def write_contact_to_csv(self, first_name, last_name, filename):
+        """
+        Description:
+            Writes a specific contact from the address book to a CSV file.
+
+        Parameter:
+            first_name (str): First name of the contact to write to CSV.
+            last_name (str): Last name of the contact to write to CSV.
+            filename (str): Name of the CSV file to save the contact.
+
+        Return:
+            None
+        """
+        for contact in self.contacts:
+            if contact.first_name == first_name and contact.last_name == last_name:
+                with open(filename, mode='w', newline='') as file:
+                    writer = csv.writer(file)
+                    writer.writerow(["First Name", "Last Name", "Address", "City", "State", "Zip", "Phone", "Email"])
+                    writer.writerow([contact.first_name, contact.last_name, contact.address, contact.city,
+                                    contact.state, contact.zip_code, contact.phone, contact.email])
+                logger.info(f"Contact {first_name} {last_name} saved to {filename}.")
+                return
+        logger.error(f"No contact found with name {first_name} {last_name}.")
+
+
+    def load_contacts_from_csv(self, filename):
+        """
+        Description:
+            Loads contacts from a CSV file into the address book.
+
+        Parameter:
+            filename (str): Name of the CSV file to load contacts from.
+
+        Return:
+            None
+        """
+        try:
+            with open(filename, mode='r') as file:
+                reader = csv.DictReader(file)
+                for row in reader:
+                    first_name = row["First Name"]
+                    last_name = row["Last Name"]
+                    address = row["Address"]
+                    city = row["City"]
+                    state = row["State"]
+                    zip_code = row["Zip"]
+                    phone = row["Phone"]
+                    email = row["Email"]
+                    self.add_contact(first_name, last_name, address, city, state, zip_code, phone, email)
+                logger.info(f"Contacts loaded from {filename}.")
+        except FileNotFoundError:
+            logger.error(f"The file {filename} was not found.")
+        except Exception as e:
+            logger.error(f"An error occurred while loading contacts from CSV: {e}")
 
 class AddressBookSystem:
     def __init__(self):
@@ -470,14 +525,58 @@ def main():
                         selected_book.delete_contact(first_name, last_name)
                         
                     elif action_choice == 5: 
-                        first_name = input_name("first")
-                        last_name = input_name("last")
-                        filename = input("Enter the filename to save the contact: ")
-                        selected_book.save_contact_to_file(first_name, last_name, filename)
+                        while True:
+                            print("\n1. Save to text file")
+                            print("2. Save to csv file")
+                            print("3. Go Back")
+                            
+                            try:
+                                save_choice = int(input("Enter your choice: "))
+                            except ValueError:
+                                logger.warning("Invalid input. Please enter a number from the menu.")
+                                continue
+                            
+                            if save_choice == 1:
+                                first_name = input_name("first")
+                                last_name = input_name("last")
+                                filename = input("Enter the filename to save the contact: ")
+                                selected_book.save_contact_to_file(first_name, last_name, filename)
+                            
+                            elif save_choice == 2:
+                                first_name = input_name("first")
+                                last_name = input_name("last")
+                                filename = input("Enter the CSV filename to save the contact: ")
+                                selected_book.write_contact_to_csv(first_name, last_name, filename)
+                            
+                            elif save_choice == 3:
+                                break
+                            else:
+                                logger.warning("Invalid option. Please select a valid choice.")
 
                     elif action_choice == 6:
-                        filename = input("Enter the filename to load contacts from: ")
-                        selected_book.load_contacts_from_file(filename)
+                        while True:
+                            print("\n1. Load from text file")
+                            print("2. Load from csv file")
+                            print("3. Go Back")
+                            
+                            try:
+                                load_choice = int(input("Enter your choice: "))
+                            except ValueError:
+                                logger.warning("Invalid input. Please enter a number from the menu.")
+                                continue
+                            
+                            if load_choice == 1:
+                                filename = input("Enter the filename to load contacts from: ")
+                                selected_book.load_contacts_from_file(filename)
+                                
+                            elif save_choice == 2:
+                                filename = input("Enter the CSV filename to load contacts from: ")
+                                selected_book.load_contacts_from_csv(filename)
+                            
+                            elif save_choice == 3:
+                                break
+                            else:
+                                logger.warning("Invalid option. Please select a valid choice.")
                                   
                     elif action_choice == 7:
                         while True:
